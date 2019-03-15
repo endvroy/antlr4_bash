@@ -1,9 +1,11 @@
 import ply.lex as lex
 import ply.yacc as yacc
+from pprint import pprint
 
 tokens = (
-    'LETTER',
-    'DIGIT',
+    'ARGWORD',
+    'WORD',
+    'NUM',
     'LTLTMINUS',
     'LTLT',
     'LTGT',
@@ -20,7 +22,8 @@ tokens = (
     'PIPE',
     'SEMISEMI',
     'SEMI',
-    # t_MINUS,
+    'MINUS',
+    'PLUS',
     'LCURLY',
     'RCURLY',
     'LPAREN',
@@ -28,14 +31,15 @@ tokens = (
     'UNDERSCORE',
     'SQUOTE',
     'DQUOTE',
-    'EQUAL',
+    'EQ',
     'BANG',
-    # t_BLANK,
-    'ANYWORD'
+    'BLANK',
+    'DOT',
+    # 'ANYCHAR'
 )
 
-t_LETTER = r'[a-zA-Z]'
-t_DIGIT = r'[0-9]'
+t_WORD = r'[a-zA-Z0-9_][-a-zA-Z0-9_]*'
+t_NUM = r'[0-9]+'
 t_LTLTMINUS = r'<<-'
 t_LTLT = r'<<'
 t_LTGT = r'<>'
@@ -52,7 +56,8 @@ t_PIPEPIPE = '\|\|'
 t_PIPE = '\|'
 t_SEMISEMI = r';;'
 t_SEMI = r';'
-# t_MINUS = r'-'
+t_MINUS = r'-'
+t_PLUS = r'\+'
 t_LCURLY = r'{'
 t_RCURLY = r'}'
 t_LPAREN = r'\('
@@ -60,11 +65,12 @@ t_RPAREN = r'\)'
 t_UNDERSCORE = r'_'
 t_SQUOTE = r"'"
 t_DQUOTE = r'"'
-t_EQUAL = r'='
+t_EQ = r'='
 t_BANG = r'!'
-# t_BLANK = r'[\t ]+'
-t_ANYWORD = r'.+'
-t_ignore = ' \t'
+t_BLANK = r'[\t ]+'
+t_DOT = r'\.'
+# t_ANYCHAR = r'.'
+# t_ignore = ' \t'
 
 lexer = lex.lex()
 
@@ -89,39 +95,67 @@ lexer = lex.lex()
 #     |
 #     """
 
-def p_word(t):
-    """
-    word : LETTER
-    | word LETTER
-    | word UNDERSCORE
-    """
-
 
 def p_cmd(t):
     """
-    cmd : prog arg_list
+    cmd : prog BLANK arg_list
+    | prog
     """
+    if len(t) == 4:
+        t[0] = [t[1]]
+        t[0].append(t[3])
+    else:
+        t[0] = [t[1]]
 
 
 def p_prog(t):
     """
-    prog : word
+    prog : WORD
     """
+    t[0] = t[1]
 
 
 def p_arg_list(t):
     """
-    arg_list : arg arg_list
-    |
+    arg_list : arg BLANK arg_list
+    | arg
     """
+    if len(t) == 4:
+        t[0] = [t[1]] + t[3]
+    else:
+        t[0] = [t[1]]
 
 
 def p_arg(t):
-    # todo: consider flags
     # todo: consider substitutions
     """
-    arg : word
+    arg : argword
     """
+    t[0] = t[1]
+
+
+def p_argword(t):
+    """
+    argword : argpart argword
+    | argpart
+    """
+    if len(t) == 3:
+        t[0] = t[1] + t[2]
+    else:
+        t[0] = t[1]
+
+
+def p_argpart(t):
+    """
+    argpart : WORD
+    | NUM
+    | PLUS
+    | MINUS
+    | EQ
+    | UNDERSCORE
+    | DOT
+    """
+    t[0] = t[1]
 
 
 parser = yacc.yacc()
@@ -136,4 +170,5 @@ if __name__ == '__main__':
             break  # No more input
         tokens.append(tok)
     print(tokens)
-    parser.parse(s)
+    result = parser.parse(s, debug=True)
+    pprint(result)
