@@ -90,11 +90,8 @@ def p_pipeline(t):
     | cmd
     """
     if len(t) == 4:
-        # t[0] = t[1]
-        # t[1].append(t[3])
         t[0] = AST(kind='pipeline', prev=t[1], cmd=t[3])
     else:
-        # t[0] = [t[1]]
         t[0] = t[1]
 
 
@@ -105,11 +102,8 @@ def p_cmd(t):
     """
     if len(t) == 6:
         t[0] = AST(kind='cmd', prog=t[2], args=t[4])
-        # t[0] = [t[2]]
-        # t[0].append(t[4])
     else:
         t[0] = AST(kind='cmd', prog=t[2])
-        # t[0] = [t[2]]
 
 
 def p_cst(t):
@@ -119,11 +113,9 @@ def p_cst(t):
     | BTICK cmd BTICK
     """
     if len(t) == 5:
-        # t[0] = t[3]
         t[0] = AST(kind='cst', cmd=t[3])
     else:
         t[0] = AST(kind='cst', cmd=t[2])
-        # t[0] = t[2]
 
 
 def p_pst(t):
@@ -140,7 +132,6 @@ def p_pst_left(t):
     pst_left : LT LPAREN cmd RPAREN
     """
     t[0] = AST(kind='pst_left', cmd=t[3])
-    # t[0] = t[3]
 
 
 def p_pst_right(t):
@@ -178,7 +169,6 @@ def p_arg_list(t):
 
 
 def p_arg(t):
-    # todo: consider substitutions
     """
     arg : argword
     | cst
