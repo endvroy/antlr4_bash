@@ -39,11 +39,18 @@ tokens = (
     'BTICK',
     'COMMA',
     'FSLASH',
-    'SQUOTE_STR'
+    'SQUOTE_STR',
+    'VARNAME',
+    'FPATH',
+    'ARGCHARS'
     # 'ANYCHAR'
 )
 
-t_SQUOTE_STR = r"'([^'\\]|\\.)*'"
+# t_VARNAME = r'[a-zA-Z0-9_]+'
+# t_FPATH = r'(/[\w-_.]+)+'
+# t_ARGCHARS=r'[-+=_.,/]'
+
+t_SQUOTE_STR = r"\$?'([^'\\]|\\.)*'"
 t_WORD = r'[a-zA-Z0-9_][-a-zA-Z0-9_]*'
 t_NUM = r'[0-9]+'
 # t_LTLTMINUS = r'<<-'
@@ -227,7 +234,6 @@ def p_argpart(t):
     | COMMA
     | FSLASH
     | SQUOTE_STR
-    | DOLLAR
     """
     t[0] = t[1]
 
