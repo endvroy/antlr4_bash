@@ -83,6 +83,7 @@ t_FSLASH = r'/'
 
 lexer = lex.lex()
 
+
 def p_pipeline(t):
     """
     pipeline : pipeline PIPE cmd
@@ -126,12 +127,28 @@ def p_cst(t):
 
 
 def p_pst(t):
+    """
+    pst : pst_left
+    | pst_right
+    """
+    t[0] = t[1]
+
+
+def p_pst_left(t):
     # process substitutions
     """
-    pst : LT LPAREN cmd RPAREN
+    pst_left : LT LPAREN cmd RPAREN
     """
-    t[0] = AST(kind='pst', cmd=t[3])
+    t[0] = AST(kind='pst_left', cmd=t[3])
     # t[0] = t[3]
+
+
+def p_pst_right(t):
+    # process substitutions
+    """
+    pst_right : GT LPAREN cmd RPAREN
+    """
+    t[0] = AST(kind='pst_right', cmd=t[3])
 
 
 def p_opt_blank(t):
@@ -144,6 +161,7 @@ def p_opt_blank(t):
 def p_prog(t):
     """
     prog : WORD
+    | cst
     """
     t[0] = AST(kind='prog', name=t[1])
 
@@ -171,7 +189,7 @@ def p_arg(t):
 
 def p_argword(t):
     """
-    argword : argpart argword
+    argword : argword argpart
     | argpart
     """
     if len(t) == 3:
