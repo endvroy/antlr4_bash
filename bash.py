@@ -83,7 +83,6 @@ t_FSLASH = r'/'
 
 lexer = lex.lex()
 
-
 def p_pipeline(t):
     """
     pipeline : pipeline PIPE cmd
@@ -95,7 +94,7 @@ def p_pipeline(t):
         t[0] = AST(kind='pipeline', prev=t[1], cmd=t[3])
     else:
         # t[0] = [t[1]]
-        t[0] = AST(kind='pipeline', prev=None, cmd=t[1])
+        t[0] = t[1]
 
 
 def p_cmd(t):
