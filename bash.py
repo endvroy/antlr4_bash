@@ -1,6 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 from pprint import pprint
+from bashlex.ast import node as AST
 
 tokens = (
     'ARGWORD',
@@ -35,6 +36,9 @@ tokens = (
     'BANG',
     'BLANK',
     'DOT',
+    'DOLLAR',
+    'BTICK',
+    'COMMA'
     # 'ANYCHAR'
 )
 
@@ -69,6 +73,9 @@ t_EQ = r'='
 t_BANG = r'!'
 t_BLANK = r'[\t ]+'
 t_DOT = r'\.'
+t_DOLLAR = r'\$'
+t_BTICK = r'`'
+t_COMMA = r','
 # t_ANYCHAR = r'.'
 # t_ignore = ' \t'
 
@@ -81,10 +88,12 @@ def p_pipeline(t):
     | cmd
     """
     if len(t) == 4:
-        t[0] = t[1]
-        t[1].append(t[3])
+        # t[0] = t[1]
+        # t[1].append(t[3])
+        t[0] = AST(kind='pipeline', prev=t[1], cmd=t[3])
     else:
-        t[0] = [t[1]]
+        # t[0] = [t[1]]
+        t[0] = AST(kind='pipeline', prev=None, cmd=t[1])
 
 
 def p_cmd(t):
@@ -93,10 +102,35 @@ def p_cmd(t):
     | opt_blank prog opt_blank
     """
     if len(t) == 6:
-        t[0] = [t[2]]
-        t[0].append(t[4])
+        t[0] = AST(kind='cmd', prog=t[2], args=t[4])
+        # t[0] = [t[2]]
+        # t[0].append(t[4])
     else:
-        t[0] = [t[2]]
+        t[0] = AST(kind='cmd', prog=t[2])
+        # t[0] = [t[2]]
+
+
+def p_cst(t):
+    # command substitutions
+    """
+    cst : DOLLAR LPAREN cmd RPAREN
+    | BTICK cmd BTICK
+    """
+    if len(t) == 5:
+        # t[0] = t[3]
+        t[0] = AST(kind='cst', cmd=t[3])
+    else:
+        t[0] = AST(kind='cst', cmd=t[2])
+        # t[0] = t[2]
+
+
+def p_pst(t):
+    # process substitutions
+    """
+    pst : LT LPAREN cmd RPAREN
+    """
+    t[0] = AST(kind='pst', cmd=t[3])
+    # t[0] = t[3]
 
 
 def p_opt_blank(t):
@@ -110,7 +144,7 @@ def p_prog(t):
     """
     prog : WORD
     """
-    t[0] = t[1]
+    t[0] = AST(kind='prog', name=t[1])
 
 
 def p_arg_list(t):
@@ -128,8 +162,10 @@ def p_arg(t):
     # todo: consider substitutions
     """
     arg : argword
+    | cst
+    | pst
     """
-    t[0] = t[1]
+    t[0] = AST(kind='arg', value=t[1])
 
 
 def p_argword(t):
@@ -152,6 +188,7 @@ def p_argpart(t):
     | EQ
     | UNDERSCORE
     | DOT
+    | COMMA
     """
     t[0] = t[1]
 
@@ -167,6 +204,7 @@ if __name__ == '__main__':
         if not tok:
             break  # No more input
         tokens.append(tok)
-    print(tokens)
-    result = parser.parse(s, debug=True)
-    pprint(result)
+    # print(tokens)
+    result = parser.parse(s)
+    # pprint(result)
+    print(result.dump())
