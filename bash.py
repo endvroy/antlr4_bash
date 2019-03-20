@@ -38,7 +38,8 @@ tokens = (
     'DOT',
     'DOLLAR',
     'BTICK',
-    'COMMA'
+    'COMMA',
+    'FSLASH'
     # 'ANYCHAR'
 )
 
@@ -76,6 +77,7 @@ t_DOT = r'\.'
 t_DOLLAR = r'\$'
 t_BTICK = r'`'
 t_COMMA = r','
+t_FSLASH = r'/'
 # t_ANYCHAR = r'.'
 # t_ignore = ' \t'
 
@@ -189,6 +191,7 @@ def p_argpart(t):
     | UNDERSCORE
     | DOT
     | COMMA
+    | FSLASH
     """
     t[0] = t[1]
 
