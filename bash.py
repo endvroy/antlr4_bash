@@ -75,37 +75,35 @@ t_DOT = r'\.'
 lexer = lex.lex()
 
 
-# def p_flags():
-#     """
-#     flag : LONG_FLAG_HEAD ident
-#     | FLAG_HEAD ident
-#     | ident EQ more_ident
-#     """
-
-# def p_ident(t):
-#     """
-#
-#     :param t:
-#     :return:
-#     """
-
-# def t_opt_blank(t):
-#     """
-#     opt_blank : BLANK
-#     |
-#     """
+def p_pipeline(t):
+    """
+    pipeline : pipeline PIPE cmd
+    | cmd
+    """
+    if len(t) == 4:
+        t[0] = t[1]
+        t[1].append(t[3])
+    else:
+        t[0] = [t[1]]
 
 
 def p_cmd(t):
     """
-    cmd : prog BLANK arg_list
-    | prog
+    cmd : opt_blank prog BLANK arg_list opt_blank
+    | opt_blank prog opt_blank
     """
-    if len(t) == 4:
-        t[0] = [t[1]]
-        t[0].append(t[3])
+    if len(t) == 6:
+        t[0] = [t[2]]
+        t[0].append(t[4])
     else:
-        t[0] = [t[1]]
+        t[0] = [t[2]]
+
+
+def p_opt_blank(t):
+    """
+    opt_blank : BLANK
+    |
+    """
 
 
 def p_prog(t):
@@ -117,11 +115,11 @@ def p_prog(t):
 
 def p_arg_list(t):
     """
-    arg_list : arg BLANK arg_list
+    arg_list : arg_list BLANK arg
     | arg
     """
     if len(t) == 4:
-        t[0] = [t[1]] + t[3]
+        t[0] = t[1] + [t[3]]
     else:
         t[0] = [t[1]]
 
