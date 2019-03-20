@@ -4,7 +4,6 @@ from pprint import pprint
 from bashlex.ast import node as AST
 
 tokens = (
-    'ARGWORD',
     'WORD',
     'NUM',
     'LTLTMINUS',
@@ -39,28 +38,30 @@ tokens = (
     'DOLLAR',
     'BTICK',
     'COMMA',
-    'FSLASH'
+    'FSLASH',
+    'SQUOTE_STR'
     # 'ANYCHAR'
 )
 
+t_SQUOTE_STR = r"'([^'\\]|\\.)*'"
 t_WORD = r'[a-zA-Z0-9_][-a-zA-Z0-9_]*'
 t_NUM = r'[0-9]+'
-t_LTLTMINUS = r'<<-'
+# t_LTLTMINUS = r'<<-'
 t_LTLT = r'<<'
-t_LTGT = r'<>'
+# t_LTGT = r'<>'
 t_LTAND = r'<&'
 t_LT = r'<'
 t_GTGT = r'>>'
 t_GTAND = r'>&'
-t_GTPIPE = r'>\|'
+# t_GTPIPE = r'>\|'
 t_GT = r'>'
 t_ANDAND = r'&&'
 t_ANDGT = r'&>'
 t_AND = r'&'
 t_PIPEPIPE = '\|\|'
 t_PIPE = '\|'
-t_SEMISEMI = r';;'
-t_SEMI = r';'
+# t_SEMISEMI = r';;'
+# t_SEMI = r';'
 t_MINUS = r'-'
 t_PLUS = r'\+'
 t_LCURLY = r'{'
@@ -68,10 +69,10 @@ t_RCURLY = r'}'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_UNDERSCORE = r'_'
-t_SQUOTE = r"'"
+# t_SQUOTE = r"'"
 t_DQUOTE = r'"'
 t_EQ = r'='
-t_BANG = r'!'
+# t_BANG = r'!'
 t_BLANK = r'[\t ]+'
 t_DOT = r'\.'
 t_DOLLAR = r'\$'
@@ -83,6 +84,8 @@ t_FSLASH = r'/'
 
 lexer = lex.lex()
 
+
+# todo: add squote str and dquote str
 
 def p_pipeline(t):
     """
@@ -151,10 +154,33 @@ def p_opt_blank(t):
 
 def p_prog(t):
     """
-    prog : WORD
+    prog : progword
     | cst
     """
     t[0] = AST(kind='prog', name=t[1])
+
+
+def p_progword(t):
+    """
+    progword : progword progpart
+    | progpart
+    """
+    if len(t) == 3:
+        t[0] = t[1] + t[2]
+    else:
+        t[0] = t[1]
+
+
+def p_progpart(t):
+    """
+    progpart : WORD
+    | NUM
+    | MINUS
+    | UNDERSCORE
+    | DOT
+    | FSLASH
+    """
+    t[0] = t[1]
 
 
 def p_arg_list(t):
@@ -173,6 +199,7 @@ def p_arg(t):
     arg : argword
     | cst
     | pst
+    | var
     """
     t[0] = AST(kind='arg', value=t[1])
 
@@ -199,8 +226,52 @@ def p_argpart(t):
     | DOT
     | COMMA
     | FSLASH
+    | SQUOTE_STR
+    | DOLLAR
     """
     t[0] = t[1]
+
+
+def p_var(t):
+    """
+    var : DOLLAR WORD
+    """
+    t[0] = AST(kind='var', name=t[2])
+
+
+def p_dquote_str(t):
+    """
+    dquote_str : DQUOTE dquote_content DQUOTE
+    """
+    return AST(kind='squote_str', content=t[2])
+
+
+def p_dquote_content(t):
+    """
+    dquote_content : dquote_content dquote_part
+    |
+    """
+    if len(t) == 3:
+        t[0] = t[1] + t[2]
+    else:
+        t[0] = ''
+
+
+def p_dquote_part(t):
+    """
+    dquote_part : cst
+    | WORD
+    | NUM
+    | PLUS
+    | MINUS
+    | EQ
+    | UNDERSCORE
+    | DOT
+    | COMMA
+    | FSLASH
+    | SQUOTE_STR
+    | BLANK
+    """
 
 
 parser = yacc.yacc()
