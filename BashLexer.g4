@@ -7,7 +7,7 @@ RPAREN : ')' -> popMode;
 mode NECK;
 NECK_BLANK : BLANK -> skip, mode(ARGS);
 EQ : '=' -> mode(ASSIGN_RLS);
-END : ('\n' | EOF | RPAREN) -> popMode;
+END : RPAREN -> type(RPAREN), popMode;
 
 mode ARGS;
 ARG: (~[$<>`()|'" \t])+;
@@ -18,17 +18,17 @@ BACKTICK : '`' -> pushMode(INSIDE_BT);
 DQUOTE : '"' -> pushMode(INSIDE_DQUOTE);
 ARGS_BLANK : BLANK;
 PIPE : '|' -> mode(DEFAULT_MODE);
-ARGS_END: RPAREN -> popMode;
+ARGS_END: RPAREN -> type(RPAREN), popMode;
 
 mode ASSIGN_RLS;
 LITERAL: (~[$<>`()|'" \t])+;
 RLS_SQUOTE_STR : SQUOTE_STR ;
-RLS_VAR : '$' ( [$!] | [a-zA-Z0-9_]+)?;
-RLS_DOLLAR_LPAREN : '$(' -> pushMode(DEFAULT_MODE);
-RLS_BACKTICK : '`' -> pushMode(INSIDE_BT);
-RLS_DQUOTE : '"' -> pushMode(INSIDE_DQUOTE);
+RLS_VAR : VAR;
+RLS_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
+RLS_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(INSIDE_BT);
+RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 RLS_BLANK: BLANK -> mode(DEFAULT_MODE);
-RLS_END: RPAREN -> popMode;
+RLS_END: RPAREN -> type(RPAREN), popMode;
 // todo: add other cases
 
 mode INSIDE_DQUOTE;
