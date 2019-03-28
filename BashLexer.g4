@@ -7,29 +7,28 @@ RPAREN : ')' -> popMode;
 mode NECK;
 NECK_BLANK : BLANK -> skip, mode(ARGS);
 EQ : '=' -> mode(ASSIGN_RLS);
-END : RPAREN -> type(RPAREN), popMode;
+NECK_RPAREN : RPAREN -> type(RPAREN), popMode;
 
 mode ARGS;
 ARG: (~[$<>`()|'" \t])+;
 SQUOTE_STR : '\'' (~['\\] | '\\' [\\'])* '\'' ;
 VAR : '$' ( [$!] | [a-zA-Z0-9_]+)?;
 DOLLAR_LPAREN : '$(' -> pushMode(DEFAULT_MODE);
-BACKTICK : '`' -> pushMode(INSIDE_BT);
 DQUOTE : '"' -> pushMode(INSIDE_DQUOTE);
 ARGS_BLANK : BLANK;
 PIPE : '|' -> mode(DEFAULT_MODE);
-ARGS_END: RPAREN -> type(RPAREN), popMode;
+BACKTICK : '`' -> pushMode(INSIDE_BT);
+ARGS_RPAREN: RPAREN -> type(RPAREN), popMode;
 
 mode ASSIGN_RLS;
 LITERAL: (~[$<>`()|'" \t])+;
 RLS_SQUOTE_STR : SQUOTE_STR ;
 RLS_VAR : VAR;
 RLS_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
-RLS_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(INSIDE_BT);
 RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 RLS_BLANK: BLANK -> mode(DEFAULT_MODE);
-RLS_END: RPAREN -> type(RPAREN), popMode;
-// todo: add other cases
+RLS_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(INSIDE_BT);
+RLS_RPAREN: RPAREN -> type(RPAREN), popMode;
 
 mode INSIDE_DQUOTE;
 DQUOTE_CONTENT : (~["\\$] | '\\' [\\"])+;
@@ -43,10 +42,12 @@ mode INSIDE_BT;
 BT_PROGNAME : PROGNAME -> type(PROGNAME), mode(BT_NECK);
 BT_BLANK : BLANK -> skip;
 TAIL_BACKTICK : BACKTICK -> type(BACKTICK), popMode ;
+INSIDE_BT_RPAREN : RPAREN -> type(RPAREN), popMode;
 
 mode BT_NECK;
 BT_NECK_BLANK : BLANK -> skip, mode(BT_ARGS);
 BT_EQ : EQ -> type(EQ), mode(BT_ASSIGN_RLS);
+BT_NECK_RPAREN : RPAREN -> type(RPAREN), popMode;
 
 mode BT_ARGS;
 BT_ARG: ARG -> type(ARG);
@@ -57,6 +58,7 @@ BT_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 BT_ARGS_BLANK : BLANK -> type(ARGS_BLANK);
 BT_PIPE : PIPE -> type(PIPE), mode(INSIDE_BT);
 BT_BACKTICK : BACKTICK -> type(BACKTICK), popMode;
+BT_ARGS_RPAREN : RPAREN -> type(RPAREN), popMode;
 
 mode BT_ASSIGN_RLS;
 BT_LITERAL: LITERAL -> type(LITERAL);
@@ -66,4 +68,4 @@ BT_RLS_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(INSIDE_BT)
 BT_RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 BT_RLS_BLANK: BLANK -> type(RLS_BLANK), mode(INSIDE_BT);
 BT_RLS_BACKTICK : BACKTICK -> type(BACKTICK), popMode;
-
+BT_RLS_RPAREN : RPAREN -> type(RPAREN), popMode;
