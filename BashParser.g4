@@ -2,11 +2,11 @@ parser grammar BashParser;
 
 options {tokenVocab=BashLexer;}
 
-entry : assign* cmd | assign;
+cmd : assign* exec | assign;
 
 assign: PROGNAME EQ (LITERAL | RLS_SQUOTE_STR | RLS_VAR | dquote_str | cst)* RLS_BLANK;
 
-cmd: PROGNAME arg_list? ARGS_BLANK?;
+exec: PROGNAME arg_list? ARGS_BLANK?;
 
 arg_list : arg_list ARGS_BLANK arg
 | arg
