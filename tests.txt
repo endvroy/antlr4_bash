@@ -1,0 +1,10 @@
+ls
+ls -a
+a=hi$(date)"i am $dquote"$str    ls -l .name | wc -c
+ls "hi $(cst "date") wc"
+a=1 b=2 ls
+a= b= ls
+echo "<(ls -a )"
+a="`ls -a`"
+a=` <(ls -l )`
+a=1 b=2 ls -a | c=3 wc `echo "-l"`
