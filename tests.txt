@@ -1,10 +1,10 @@
 ls
-ls -a
-a=hi$(date)"i am $dquote"$str    ls -l .name | wc -c
-ls "hi $(cst "date") wc"
-a=1 b=2 ls
-a= b= ls
-echo "<(ls -a )"
-a="`ls -a`"
-a=` <(ls -l )`
-a=1 b=2 ls -a | c=3 wc `echo "-l"`
+ls -a| a= b=2 ls |var=hello |foo=bar| $USER me
+echo HEAD'squote \\ str \' $NOTVAR'$TAIL | cat HEAD"dquote \\ str \" $VAR"$TAIL
+ls "hi $(echo "date") wc" | $(readlink -f $(dirname "$0"))
+echo ">(ls -a )" | b="`ls -a`"
+a=` <(ls -l )` | c=3 wc `yes >(date)` | `v=val$USER echo "-l"` | `$(echo date)`
+$USER=roy me | =1 hello | a<(bc d )=23
+
+
+
