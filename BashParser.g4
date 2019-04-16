@@ -14,11 +14,11 @@ assign: NAME EQ assign_rls;
 
 assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst)*;
 
-exec: prog arg_list? ARGS_BLANK?;
+exec: prog (BLANK arg_list)? BLANK?;
 
 prog : (NAME | VAR | SQUOTE_STR | dquote_str | subst)+;
 
-arg_list : arg_list ARGS_BLANK arg
+arg_list : arg_list BLANK arg
 | arg
 ;
 
