@@ -5,16 +5,16 @@ options {tokenVocab=BashLexer;}
 pipeline : pipeline PIPE cmd
 | cmd;
 
-cmd : (assign_list RLS_BLANK)? exec | assign_list RLS_BLANK?;
+cmd : ((assign_list BLANK)? exec | assign_list) BLANK?;
 
-assign_list : assign_list RLS_BLANK assign
+assign_list : assign_list BLANK assign
 | assign;
 
 assign: NAME EQ assign_rls;
 
 assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst)*;
 
-exec: prog (BLANK arg_list)? BLANK?;
+exec: prog (BLANK arg_list)?;
 
 prog : (NAME | VAR | SQUOTE_STR | dquote_str | subst)+;
 

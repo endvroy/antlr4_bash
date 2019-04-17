@@ -1,7 +1,7 @@
 lexer grammar BashLexer;
 
-BLANK : [ \t]+ -> skip;
 NAME : [-a-zA-Z0-9_./]+ -> mode(NECK);
+BLANK : [ \t]+ -> skip;
 HEAD_EQ : '=' -> type(NAME), mode(NO_ASSIGN);
 VAR : '$' ( [$!@] | [a-zA-Z0-9_]+)? -> mode(NO_ASSIGN);
 SQUOTE_STR : '\'' (~['\\] | '\\' [\\'])* '\'' -> mode(NO_ASSIGN) ;
@@ -59,7 +59,7 @@ RLS_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE)
 RLS_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 RLS_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
 RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
-RLS_BLANK: BLANK -> mode(DEFAULT_MODE);
+RLS_BLANK: BLANK -> type(BLANK), mode(DEFAULT_MODE);
 RLS_PIPE : PIPE -> type(PIPE), mode(DEFAULT_MODE);
 RLS_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(BT);
 RLS_RPAREN: RPAREN -> type(RPAREN), popMode;
@@ -134,7 +134,7 @@ BT_RLS_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(BT);
 BT_RLS_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(BT);
 BT_RLS_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(BT);
 BT_RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
-BT_RLS_BLANK: BLANK -> type(RLS_BLANK), mode(BT);
+BT_RLS_BLANK: BLANK -> type(BLANK), mode(BT);
 BT_RLS_BACKTICK : BACKTICK -> type(BACKTICK), popMode;
 BT_RLS_RPAREN: RPAREN -> type(RPAREN), popMode;
 
