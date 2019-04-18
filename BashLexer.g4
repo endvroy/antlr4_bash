@@ -4,13 +4,14 @@ NAME : [-a-zA-Z0-9_./]+ -> mode(NECK);
 BLANK : [ \t]+ -> skip;
 HEAD_EQ : '=' -> type(NAME), mode(NO_ASSIGN);
 VAR : '$' ( [$!@] | [a-zA-Z0-9_]+)? -> mode(NO_ASSIGN);
-SQUOTE_STR : '\'' (~['\\] | '\\' [\\'])* '\'' -> mode(NO_ASSIGN) ;
+SQUOTE_STR : '\'' (~['\\] | '\\' .)* '\'' -> mode(NO_ASSIGN) ;
 DQUOTE : '"' -> mode(NO_ASSIGN), pushMode(INSIDE_DQUOTE) ;
 DOLLAR_LPAREN : '$(' -> mode(NO_ASSIGN), pushMode(DEFAULT_MODE);
 LT_LPAREN : '<(' -> mode(NO_ASSIGN), pushMode(DEFAULT_MODE);
 GT_LPAREN : '>(' -> mode(NO_ASSIGN), pushMode(DEFAULT_MODE);
 BACKTICK : '`' -> mode(NO_ASSIGN), pushMode(BT);
 PIPE: '|';
+LT: '<' -> pushMode(REDIR);
 RPAREN : ')' -> popMode;
 
 mode NECK;
@@ -24,6 +25,7 @@ NECK_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), mode(NO_ASSIGN), push
 NECK_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), mode(NO_ASSIGN), pushMode(DEFAULT_MODE);
 NECK_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), mode(NO_ASSIGN), pushMode(DEFAULT_MODE);
 NECK_BACKTICK : BACKTICK -> type(BACKTICK), mode(NO_ASSIGN), pushMode(BT);
+NECK_LT: LT -> type(LT), pushMode(REDIR);
 NECK_RPAREN : RPAREN -> type(RPAREN), popMode;
 
 mode NO_ASSIGN;
@@ -47,6 +49,7 @@ ARGS_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 ARGS_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
 ARGS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 ARGS_BLANK : BLANK -> type(BLANK);
+ARGS_LT: LT -> type(LT), pushMode(REDIR);
 ARGS_PIPE : PIPE -> type(PIPE), mode(DEFAULT_MODE);
 ARGS_BACKTICK : BACKTICK ->type(BACKTICK), pushMode(BT);
 ARGS_RPAREN: RPAREN -> type(RPAREN), popMode;
@@ -60,6 +63,7 @@ RLS_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 RLS_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
 RLS_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 RLS_BLANK: BLANK -> type(BLANK), mode(DEFAULT_MODE);
+RLS_LT: LT -> type(LT), pushMode(REDIR);
 RLS_PIPE : PIPE -> type(PIPE), mode(DEFAULT_MODE);
 RLS_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(BT);
 RLS_RPAREN: RPAREN -> type(RPAREN), popMode;
@@ -72,6 +76,32 @@ DQUOTE_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(BT);
 TAIL_DQUOTE : DQUOTE -> type(DQUOTE), popMode;
+
+mode REDIR;
+REDIR_ARG: (~[$<>`()|'" \t])+ -> type(NAME);
+REDIR_SQUOTE_STR : SQUOTE_STR  -> type(SQUOTE_STR);
+REDIR_VAR : VAR -> type(VAR);
+REDIR_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
+REDIR_PIPE : PIPE -> type(PIPE), popMode, mode(DEFAULT_MODE);
+REDIR_BACKTICK : BACKTICK ->type(BACKTICK), pushMode(BT);
+REDIR_RPAREN: RPAREN -> type(RPAREN), popMode;
+REDIR_BLANK : BLANK -> skip;
+
+mode REDIR_NECK;
+REDIR_NECK_ARG: (~[$<>`()|'" \t])+ -> type(NAME);
+REDIR_NECK_SQUOTE_STR : SQUOTE_STR  -> type(SQUOTE_STR);
+REDIR_NECK_VAR : VAR -> type(VAR);
+REDIR_NECK_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_NECK_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_NECK_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
+REDIR_NECK_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
+REDIR_NECK_PIPE : PIPE -> type(PIPE), popMode, mode(DEFAULT_MODE);
+REDIR_NECK_BACKTICK : BACKTICK ->type(BACKTICK), pushMode(BT);
+REDIR_NECK_RPAREN: RPAREN -> type(RPAREN), popMode;
+REDIR_NECK_BLANK : BLANK -> type(BLANK), popMode;
 
 // almost a full copy, just for backtick
 mode BT;
