@@ -14,7 +14,7 @@ assign: NAME EQ assign_rls;
 
 assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst)*;
 
-exec: prog (BLANK cmd_suffix)?;
+exec: prog redir? (BLANK cmd_suffix)?;
 
 prog : (NAME | VAR | SQUOTE_STR | dquote_str | subst)+;
 
@@ -22,10 +22,6 @@ redir : LT arg;
 
 cmd_suffix : cmd_suffix BLANK (arg | redir)
 | (arg | redir);
-
-arg_list : arg_list BLANK arg
-| arg
-;
 
 arg: (NAME | SQUOTE_STR | VAR | dquote_str | subst)+;
 
