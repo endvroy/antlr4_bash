@@ -11,3 +11,19 @@ comm -12 <(sort< a) <(sort < b)
 head -$((${RANDOM} % `wc -l < file` + 1)) file | tail -1
 read sh_lock_lastPID < $sh_lock_file
 read -t 3 variable < <( tail -f logfile.log | grep "something" )
+ssh -T tunneluser@111.222.333.444 <<'EOI'
+ssh tunneluser@111.222.333.444 <<\EOI
+read -a arr <<< "1 4 6 9 11 17 22"
+sleep $($(date -f - +%s- <<< $'tomorrow 21:30\nnow')0)
+zcat number.txt.gz | zcat xxx.txt.gz | comm -12 /dev/fd/3 - 3<&0
+time find / &>/dev/null 2>&1 | grep real
+find ./ -type f -name '*.c*' -print0 | xargs -0 rm -rf &>> log_del.txt
+find ./ -type f -name '*.r*' -print0 | xargs -0 rm -rf &> log_del.txt
+time find / &>/dev/null 2>&1 | grep real
+time find / 2>/dev/null 2>time.txt
+find ./subdirectory -type f 2>>error.log
+find . -name ‘*.mp4’ >> /tmp/$$
+{ time find / &>/dev/null; } 2>&1 | grep real
+{ time find / &>/dev/null; } 2>&1 | grep real
+{ time find / 2>/dev/null; } 2>time.txt
+zcat number.txt.gz | { zcat xxx.txt.gz | comm -12 /dev/fd/3 - ; } 3<&0
