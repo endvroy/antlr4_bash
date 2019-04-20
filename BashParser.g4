@@ -16,14 +16,28 @@ assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst)*;
 
 exec: prog redir? (BLANK cmd_suffix)?;
 
-prog : (NAME | VAR | SQUOTE_STR | dquote_str | subst)+;
+prog : (NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)+;
 
-redir : LT arg;
+redir : NUM redir_op arg
+| redir_op arg;
 
-cmd_suffix : cmd_suffix BLANK (arg | redir)
-| (arg | redir);
+redir_op : LT
+| GT
+| LT_AND
+| GT_AND
+| AND_GT
+| AND_DGT
+| DLT
+| TLT
+| DLT_DASH
+| DGT
+| LTGT
+| GTPIPE;
 
-arg: (NAME | SQUOTE_STR | VAR | dquote_str | subst)+;
+cmd_suffix : cmd_suffix BLANK (redir | arg)
+| (redir | arg);
+
+arg: (NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | VAR | subst)* DQUOTE;
 
