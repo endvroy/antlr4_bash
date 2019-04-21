@@ -5,18 +5,21 @@ options {tokenVocab=BashLexer;}
 pipeline : pipeline PIPE cmd
 | cmd;
 
-cmd : ((assign_list BLANK)? exec | assign_list) BLANK?;
+cmd : ((exec_prefix BLANK)? exec | exec_prefix) BLANK?;
 
-assign_list : assign_list BLANK assign
-| assign;
+exec_prefix : exec_prefix BLANK (redir | assign)
+| (redir | assign);
 
 assign: NAME EQ assign_rls;
 
-assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst)*;
+assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst | redir)*;
 
-exec: prog redir? (BLANK cmd_suffix)?;
+exec: prog redir? (BLANK exec_suffix)?;
 
 prog : (NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)+;
+
+exec_suffix : exec_suffix BLANK (redir | arg)
+| (redir | arg);
 
 redir : NUM redir_op arg
 | redir_op arg;
@@ -34,8 +37,6 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-cmd_suffix : cmd_suffix BLANK (redir | arg)
-| (redir | arg);
 
 arg: (NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
