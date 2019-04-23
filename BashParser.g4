@@ -55,4 +55,8 @@ rpst : GT_LPAREN pipeline? RPAREN;
 
 arith : DOLLAR_DLPAREN pipeline? DRPAREN; //todo: fill in proper body for arith
 
-subsh : LCURLY BLANK pipeline BLANK? SEMI BLANK? RCURLY;  // todo: figure out how to deal with blanks
+grp : paren_grp | curly_grp;
+
+paren_grp : LPAREN pipeline RPAREN;
+
+curly_grp : LCURLY pipeline SEMI BLANK? RCURLY;  // todo: check for leading blank after LCURLY in actions
