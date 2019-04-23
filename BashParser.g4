@@ -5,24 +5,25 @@ options {tokenVocab=BashLexer;}
 pipeline : pipeline PIPE cmd
 | cmd;
 
-cmd : ((exec_prefix BLANK)? exec | exec_prefix) BLANK?;
+cmd : BLANK? ((exec_prefix BLANK)? exec | exec_prefix) BLANK?;
 
 exec_prefix : exec_prefix BLANK (redir | assign)
 | (redir | assign);
 
-assign: NAME EQ assign_rls;
+assign: VARNAME EQ assign_rls;
 
-assign_rls : (LITERAL | SQUOTE_STR | VAR | dquote_str | subst | redir)*;
+assign_rls : (VARNAME | NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst | redir)*;
 
 exec: prog redir? (BLANK exec_suffix)?;
 
-prog : (NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)+;
+prog : VARNAME (VARNAME | NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)*
+| (NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst) (VARNAME | NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)*;
 
 exec_suffix : exec_suffix BLANK (redir | arg)
 | (redir | arg);
 
-redir : NUM redir_op arg
-| redir_op arg;
+redir : NUM redir_op BLANK? arg
+| redir_op BLANK? arg;
 
 redir_op : LT
 | GT
@@ -38,7 +39,7 @@ redir_op : LT
 | GTPIPE;
 
 
-arg: (NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
+arg: (VARNAME | NAME | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | VAR | subst)* DQUOTE;
 
