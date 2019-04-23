@@ -27,3 +27,5 @@ find . -name ‘*.mp4’ >> /tmp/$$
 { time find / &>/dev/null; } 2>&1 | grep real
 { time find / 2>/dev/null; } 2>time.txt
 zcat number.txt.gz | { zcat xxx.txt.gz | comm -12 /dev/fd/3 - ; } 3<&0
+a=<4  wc
+a=<4 2&>1 b=  wc
