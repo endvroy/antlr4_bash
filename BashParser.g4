@@ -39,12 +39,11 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-
 arg: (VARNAME | NAME | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | VAR | subst)* DQUOTE;
 
-subst : cst | lpst | rpst;
+subst : cst | lpst | rpst | arith;
 
 cst : DOLLAR_LPAREN pipeline? RPAREN
 | BACKTICK pipeline? BACKTICK
@@ -53,3 +52,7 @@ cst : DOLLAR_LPAREN pipeline? RPAREN
 lpst : LT_LPAREN pipeline? RPAREN;
 
 rpst : GT_LPAREN pipeline? RPAREN;
+
+arith : DOLLAR_DLPAREN pipeline? DRPAREN; //todo: fill in proper body for arith
+
+subsh : LCURLY BLANK pipeline BLANK? SEMI BLANK? RCURLY;  // todo: figure out how to deal with blanks
