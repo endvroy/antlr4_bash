@@ -43,7 +43,7 @@ arg: (VARNAME | NAME | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | VAR | subst)* DQUOTE;
 
-subst : cst | lpst | rpst | arith;
+subst : cst | lpst | rpst | arith | param_exp;
 
 cst : DOLLAR_LPAREN pipeline? RPAREN
 | BACKTICK pipeline? BACKTICK
@@ -54,6 +54,10 @@ lpst : LT_LPAREN pipeline? RPAREN;
 rpst : GT_LPAREN pipeline? RPAREN;
 
 arith : DOLLAR_DLPAREN pipeline? DRPAREN; //todo: fill in proper body for arith
+
+param_exp: DOLLAR_LCURLY VARNAME param_exp_op BLANK? assign_rls RCURLY;
+
+param_exp_op: COMMA (DASH | EQ | QMARK | PLUS);
 
 grp : paren_grp | curly_grp;
 
