@@ -17,7 +17,8 @@ assign_rls : (VARNAME | NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst | red
 exec: prog redir? (BLANK exec_suffix)?;
 
 prog : VARNAME (VARNAME | NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)*
-| (NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst) (VARNAME | NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)*;
+| (NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)
+(VARNAME | NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)*;
 
 exec_suffix : exec_suffix BLANK (redir | arg)
 | (redir | arg);
