@@ -29,3 +29,6 @@ find . -name ‘*.mp4’ >> /tmp/$$
 zcat number.txt.gz | { zcat xxx.txt.gz | comm -12 /dev/fd/3 - ; } 3<&0
 a=<4  wc
 a=<4 2&>1 b=  wc
+find /the/path -depth -name "*.abc" -exec sh -c 'mv "$1" "${1%.abc}.edefg"' _ {} \;
+cp "${FILE}" "COLLECT/$(mktemp job_XXXXXXXXX)"
+TMPPS_PREFIX=$(mktemp "${TMPDIR:-/tmp/}${tempname}.XXXXXX")
