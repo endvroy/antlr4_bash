@@ -42,6 +42,7 @@ DQUOTE_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MO
 DQUOTE_DOLLAR_DLPAREN: DOLLAR_DLPAREN -> pushMode(ARITH);
 DQUOTE_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_GT_LPAREN : GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
+DQUOTE_DOLLAR_LCURLY: DOLLAR_LCURLY -> type(DOLLAR_LCURLY), pushMode(PARAM_EXPANSION);
 DQUOTE_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(BT);
 TAIL_DQUOTE : DQUOTE -> type(DQUOTE), popMode;
 
@@ -58,7 +59,7 @@ ARITH_DRPAREN : DRPAREN -> type(DRPAREN), popMode;
 
 mode PARAM_EXPANSION;
 PARAM_VARNAME: VARNAME -> type(VARNAME);
-PARAM_NAME: NAME -> type(NAME);
+PARAM_NAME: (~[-a-zA-Z0-9= \t\n<>(){}'"|$&`;:+?%#])+ -> type(NAME);
 PARAM_NUM: NUM -> type(NUM);
 PARAM_BLANK: BLANK -> type(BLANK);
 PARAM_VAR: VAR -> type(VAR);
@@ -75,7 +76,11 @@ DASH: '-';
 PARAM_EQ: '=';
 QMARK: '?';
 PLUS: '+';
-PARAM_RCURLY: RCURLY -> popMode;
+PERCENT: '%';
+DPERCENT: '%%';
+POUND: '#';
+DPOUND: '##';
+PARAM_RCURLY: RCURLY -> type(RCURLY), popMode;
 
 // almost a full copy, just for backtick
 mode BT;
