@@ -36,7 +36,7 @@ RPAREN : ')' -> popMode;
 DRPAREN : '))' -> popMode;
 
 mode INSIDE_DQUOTE;
-DQUOTE_CONTENT : (~["\\$<>`] | '\\' [\\"])+;
+DQUOTE_CONTENT : (~["\\$<>`] | '\\' .)+;
 DQUOTE_VAR : VAR -> type(VAR);
 DQUOTE_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_DOLLAR_DLPAREN: DOLLAR_DLPAREN -> pushMode(ARITH);
