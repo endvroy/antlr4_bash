@@ -39,7 +39,7 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-arg: (VARNAME | NAME | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst | pure_curly)+;
+arg: (VARNAME | NAME | ESC_CHAR | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst | pure_curly)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | LT | GT | VAR | subst)* DQUOTE;
 
@@ -65,6 +65,6 @@ grp : paren_grp | curly_grp;
 
 paren_grp : LPAREN pipeline RPAREN;
 
-pure_curly: LCURLY RCURLY;
+pure_curly: LCURLY | RCURLY;
 
 curly_grp : LCURLY pipeline SEMI BLANK? RCURLY;  // todo: check for leading blank after LCURLY in actions
