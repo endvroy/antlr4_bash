@@ -41,7 +41,7 @@ redir_op : LT
 
 arg: (VARNAME | NAME | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst)+;
 
-dquote_str : DQUOTE (DQUOTE_CONTENT | VAR | subst)* DQUOTE;
+dquote_str : DQUOTE (DQUOTE_CONTENT | LT | GT | VAR | subst)* DQUOTE;
 
 subst : cst | lpst | rpst | arith | param_exp;
 
