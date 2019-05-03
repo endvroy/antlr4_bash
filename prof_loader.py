@@ -33,8 +33,6 @@ if __name__ == '__main__':
                 input_stream = InputStream(line)
                 lexer = PanicBashLexer(input_stream)
                 stream = CommonTokenStream(lexer)
-                stream.fill()
-                tokens = stream.tokens
                 parser = BashParser(stream)
                 parser._errHandler = BailErrorStrategy()
                 parser.pipeline()
