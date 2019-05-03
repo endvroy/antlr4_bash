@@ -1,6 +1,6 @@
 ls
 ls -a| a= b=2 ls |var=hello |foo=bar| $USER me
-echo HEAD'squote \\ str \' $NOTVAR'$TAIL | cat HEAD"dquote \\ str \" $VAR"$TAIL
+echo HEAD'squote \\ str  $NOTVAR'$TAIL | cat HEAD"dquote \\ str \" $VAR"$TAIL
 ls "hi $(echo "date") wc" | $(readlink -f $(dirname "$0"))
 echo ">(ls -a )" | b="`ls -a`"
 a=` <(ls -l )` | c=3 wc `yes >(date)` | `v=val$USER echo "-l"` | `$(echo date)`
