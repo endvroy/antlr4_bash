@@ -39,7 +39,7 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-arg: (VARNAME | NAME | ESC_CHAR | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst | pure_curly)+;
+arg: (VARNAME | NAME | ESC_CHAR | AND | EQ | NUM | SQUOTE_STR | VAR | dquote_str | subst | pure_curly)+;
 
 dquote_str : DQUOTE (DQUOTE_CONTENT | LT | GT | VAR | subst)* DQUOTE;
 
