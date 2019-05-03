@@ -56,12 +56,12 @@ class BashASTVisitor(BashParserVisitor):
 
     def visitExec(self, ctx: BashParser.ExecContext):
         if ctx is None:
-            return None
+            return [], []
         prog = self.visitProg(ctx.prog())
         suffix = self.visitExec_suffix(ctx.exec_suffix())
-        if ctx.redir():
-            imm_redir = self.visitRedir(ctx.redir())
-            suffix.append(imm_redir)
+        # if ctx.redir():
+        #     imm_redir = self.visitRedir(ctx.redir())
+        #     suffix.append(imm_redir)
         return prog, suffix
 
     def visitExec_prefix(self, ctx: BashParser.Exec_prefixContext):
@@ -103,19 +103,18 @@ class BashASTVisitor(BashParserVisitor):
 
     def visitRedir(self, ctx: BashParser.RedirContext):
         if ctx.NUM():
-            # fixme: potential bug
-            infile = ctx.NUM().getText()
+            lhs = ctx.NUM().getText()
         else:
-            infile = None
+            lhs = None
 
         redir_type = self.visitRedir_op(ctx.redir_op())
 
-        outfile = self.visitArg(ctx.arg())
+        rhs = self.visitArg(ctx.arg())
 
         redir_ast = BashAST(kind='redir',
                             type=redir_type,
-                            infile=infile,
-                            outfile=outfile)
+                            lhs=lhs,
+                            rhs=rhs)
 
         return redir_ast
 
@@ -127,19 +126,19 @@ class BashASTVisitor(BashParserVisitor):
         return redir_type
 
     def gather_parts(self, ctx):
-        assert ctx.children
         parts = []
-        for child in ctx.children:
-            try:
-                # todo: leaf node
-                sym_idx = child.getSymbol().type
-                sym_name = BashParser.symbolicNames[sym_idx]
-                lexeme = child.getText()
-                part_ast = BashAST(kind=sym_name, value=lexeme)
-            except AttributeError:
-                # todo: delegate
-                part_ast = self.visit(child)
-            parts.append(part_ast)
+        if ctx.getChildCount():
+            for child in ctx.children:
+                try:
+                    # leaf node
+                    sym_idx = child.getSymbol().type
+                    sym_name = BashParser.symbolicNames[sym_idx]
+                    lexeme = child.getText()
+                    part_ast = BashAST(kind=sym_name, value=lexeme)
+                except AttributeError:
+                    # todo: delegate
+                    part_ast = self.visit(child)
+                parts.append(part_ast)
         return parts
 
     def visitProg(self, ctx: BashParser.ProgContext):
@@ -151,3 +150,6 @@ class BashASTVisitor(BashParserVisitor):
         arg_parts = self.gather_parts(ctx)
         arg_ast = BashAST(kind='arg', parts=arg_parts)
         return arg_ast
+
+    def visitSubst(self, ctx: BashParser.SubstContext):
+        pass
