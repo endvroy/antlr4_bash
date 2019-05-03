@@ -56,10 +56,10 @@ rpst : GT_LPAREN pipeline? RPAREN;
 arith : DOLLAR_DLPAREN pipeline? DRPAREN; //todo: fill in proper body for arith
 
 param_exp: DOLLAR_LCURLY VARNAME (param_exp_op BLANK? assign_rls)? RCURLY
-| DOLLAR_LCURLY POUND VARNAME RCURLY;
+| DOLLAR_LCURLY HASH VARNAME RCURLY;
 
 param_exp_op: COMMA (DASH | EQ | QMARK | PLUS)
-| PERCENT | DPERCENT | POUND | DPOUND;
+| PERCENT | DPERCENT | HASH | DHASH;
 
 grp : paren_grp | curly_grp;
 

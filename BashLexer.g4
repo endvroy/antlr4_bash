@@ -82,8 +82,8 @@ QMARK: '?';
 PLUS: '+';
 PERCENT: '%';
 DPERCENT: '%%';
-POUND: '#';
-DPOUND: '##';
+HASH: '#';
+DHASH: '##';
 PARAM_RCURLY: RCURLY -> type(RCURLY), popMode;
 
 // almost a full copy, just for backtick
