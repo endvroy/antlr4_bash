@@ -14,14 +14,14 @@ assign: VARNAME EQ assign_rls;
 
 assign_rls : (VARNAME | NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst)*;
 
-exec: prog redir? (BLANK exec_suffix)?;
+exec: prog exec_suffix?;
 
 prog : VARNAME (VARNAME | NAME | NUM | VAR | SQUOTE_STR | dquote_str | subst)*
 | (NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)
 (VARNAME | NAME | NUM | EQ | VAR | SQUOTE_STR | dquote_str | subst)*;
 
-exec_suffix : exec_suffix BLANK (redir | arg)
-| (redir | arg);
+exec_suffix : exec_suffix (BLANK? redir | BLANK arg)
+| (BLANK? redir | BLANK arg);
 
 redir : NUM redir_op BLANK? arg
 | redir_op BLANK? arg;
