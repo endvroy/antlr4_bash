@@ -7,12 +7,12 @@ pipeline : pipeline PIPE cmd
 
 cmd : BLANK? ((exec_prefix BLANK)? exec | exec_prefix) BLANK?;
 
-exec_prefix : exec_prefix BLANK (redir | assign)
+exec_prefix : exec_prefix (BLANK? redir | BLANK assign)
 | (redir | assign);
 
 assign: VARNAME EQ assign_rls;
 
-assign_rls : (VARNAME | NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst | redir)*;
+assign_rls : (VARNAME | NAME | NUM | SQUOTE_STR | VAR | dquote_str | subst)*;
 
 exec: prog redir? (BLANK exec_suffix)?;
 
