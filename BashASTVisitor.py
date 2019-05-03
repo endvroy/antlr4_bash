@@ -152,4 +152,61 @@ class BashASTVisitor(BashParserVisitor):
         return arg_ast
 
     def visitSubst(self, ctx: BashParser.SubstContext):
-        pass
+        assert ctx.getChildCount() == 1
+        return self.visit(ctx.children[0])
+
+    def visitCst(self, ctx: BashParser.CstContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        return BashAST(kind='cst', pipeline=pipeline)
+
+    def visitLpst(self, ctx: BashParser.LpstContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        return BashAST(kind='lpst', pipeline=pipeline)
+
+    def visitRpst(self, ctx: BashParser.RpstContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        return BashAST(kind='rpst', pipeline=pipeline)
+
+    def visitArith(self, ctx: BashParser.ArithContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        return BashAST(kind='arith_subst', pipeline=pipeline)
+
+    def visitParam_exp(self, ctx: BashParser.Param_expContext):
+        var = ctx.VARNAME().getText()
+        if ctx.HASH():
+            ast = BashAST(kind='param_exp_hash', var=var)
+        else:
+            op = self.visitParam_exp_op(ctx.param_exp_op())
+            rhs = self.visitAssign_rls(ctx.assign_rls())
+            ast = BashAST(kind='param_exp_repl',
+                          var=var,
+                          op=op,
+                          rhs=rhs)
+        # todo: more cases may be added for param exp later
+        return ast
+
+    def visitDquote_str(self, ctx: BashParser.Dquote_strContext):
+        dquote_parts = self.gather_parts(ctx)
+        ast = BashAST(kind='dquote_str', parts=dquote_parts[1:-1])  # filter out dquotes
+        return ast
+
+    def visitGrp(self, ctx: BashParser.GrpContext):
+        assert ctx.getChildCount() == 1
+        return self.visit(ctx.children[0])
+
+    def visitParen_grp(self, ctx: BashParser.Paren_grpContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        ast = BashAST(kind='paren_grp', pipeline=pipeline)
+        return ast
+
+    def visitCurly_grp(self, ctx: BashParser.Curly_grpContext):
+        pipeline = self.visitPipeline(ctx.pipeline())
+        ast = BashAST(kind='curly_grp', pipeline=pipeline)
+        return ast
+
+    def visitPure_curly(self, ctx: BashParser.Pure_curlyContext):
+        if ctx.LCURLY():
+            value = '{'
+        else:
+            value = '}'
+        return BashAST(kind='NAME', value=value)
