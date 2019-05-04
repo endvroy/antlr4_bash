@@ -3,18 +3,22 @@ from gen.BashLexer import BashLexer
 from gen.BashParser import BashParser
 from BashASTVisitor import BashASTVisitor
 import itertools
+from prof_loader import PanicBashLexer
 
 
 def parse(line):
     input_stream = InputStream(line)
-    lexer = BashLexer(input_stream)
+    lexer = PanicBashLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = BashParser(stream)
+    parser._errHandler = BailErrorStrategy()
     tree = parser.pipeline()
     return tree
 
 
 def get_normalize_tokens(ast):
+    if ast == []:
+        return []
     if ast.kind.isupper():
         # leaf node
         if ast.kind == 'VAR':
@@ -45,7 +49,7 @@ def get_normalize_tokens(ast):
         rhs = get_normalize_tokens(ast.rhs)
         return lhs + ['='] + rhs
     elif ast.kind == 'assign_rhs':
-        return [get_normalize_tokens(x) for x in ast.parts]
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
     elif ast.kind == 'redir':
         lhs = []
         if ast.lhs:
@@ -70,7 +74,7 @@ def get_normalize_tokens(ast):
         # todo: the structure of op might change
         return ['$', '{'] + get_normalize_tokens(ast.var) + ast.op + ['}']
     elif ast.kind == 'dquote_str':
-        return ['"'] + get_normalize_tokens(ast.parts) + ['"']
+        return ['"'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['"']
     elif ast.kind == 'paren_grp':
         return ['('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'curly_grp':
@@ -98,8 +102,5 @@ def normalize_line(line):
 
 if __name__ == '__main__':
     l = input('input:\n')
-    tree = parse(l)
-    visitor = BashASTVisitor()
-    ast = visitor.visit(tree)
-    tokens = get_normalize_tokens(ast)
+    tokens = normalize_line(l)
     print(''.join(tokens))
