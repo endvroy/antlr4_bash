@@ -185,6 +185,9 @@ class BashASTVisitor(BashParserVisitor):
         # todo: more cases may be added for param exp later
         return ast
 
+    def visitParam_exp_op(self, ctx: BashParser.Param_exp_opContext):
+        return [x.getText() for x in ctx.children]
+
     def visitDquote_str(self, ctx: BashParser.Dquote_strContext):
         dquote_parts = self.gather_parts(ctx)
         ast = BashAST(kind='dquote_str', parts=dquote_parts[1:-1])  # filter out dquotes
