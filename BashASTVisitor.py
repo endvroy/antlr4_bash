@@ -134,6 +134,9 @@ class BashASTVisitor(BashParserVisitor):
                     sym_idx = child.getSymbol().type
                     sym_name = BashParser.symbolicNames[sym_idx]
                     lexeme = child.getText()
+                    if sym_name == 'VAR' and len(lexeme) == 1:
+                        # just a dollar sign, not a real var
+                        sym_name = 'NAME'
                     part_ast = BashAST(kind=sym_name, value=lexeme)
                 except AttributeError:
                     # todo: delegate
