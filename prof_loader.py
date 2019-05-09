@@ -1,6 +1,6 @@
 from antlr4 import *
-from gen.BashLexer import BashLexer
-from gen.BashParser import BashParser
+from .gen.BashLexer import BashLexer
+from .gen.BashParser import BashParser
 from contextlib import redirect_stderr
 import sys
 

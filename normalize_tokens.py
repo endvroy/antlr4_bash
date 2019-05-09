@@ -1,9 +1,9 @@
 from antlr4 import *
-from gen.BashLexer import BashLexer
-from gen.BashParser import BashParser
-from BashASTVisitor import BashASTVisitor
+from .gen.BashLexer import BashLexer
+from .gen.BashParser import BashParser
+from .BashASTVisitor import BashASTVisitor
 import itertools
-from prof_loader import PanicBashLexer
+from .prof_loader import PanicBashLexer
 
 
 def parse(line):

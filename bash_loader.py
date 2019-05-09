@@ -1,16 +1,29 @@
 from antlr4 import *
-from gen.BashLexer import BashLexer
-from gen.BashParser import BashParser
-from BashASTVisitor import BashASTVisitor
+from .gen.BashLexer import BashLexer
+from .gen.BashParser import BashParser
+from .BashASTVisitor import BashASTVisitor
 
 
-def parse(line):
+def raw_parse(line):
     input_stream = InputStream(line)
     lexer = BashLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = BashParser(stream)
     tree = parser.pipeline()
     return tree
+
+
+def get_ast(tree):
+    visitor = BashASTVisitor()
+    ast = visitor.visit(tree)
+    return ast
+
+
+def parse(line):
+    tree = raw_parse(line)
+    visitor = BashASTVisitor()
+    ast = visitor.visit(tree)
+    return ast
 
 
 if __name__ == '__main__':

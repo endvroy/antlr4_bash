@@ -1,6 +1,6 @@
-from gen.BashParserVisitor import BashParserVisitor
-from gen.BashParser import BashParser
-from bash_ast import BashAST
+from .gen.BashParserVisitor import BashParserVisitor
+from .gen.BashParser import BashParser
+from .bash_ast import BashAST
 
 # in decreasing order
 REDIR_ORDER = ['LT',
