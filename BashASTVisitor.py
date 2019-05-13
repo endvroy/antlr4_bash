@@ -1,3 +1,4 @@
+import re
 from .gen.BashParserVisitor import BashParserVisitor
 from .gen.BashParser import BashParser
 from .bash_ast import BashAST
@@ -134,14 +135,47 @@ class BashASTVisitor(BashParserVisitor):
                     sym_idx = child.getSymbol().type
                     sym_name = BashParser.symbolicNames[sym_idx]
                     lexeme = child.getText()
-                    if sym_name == 'VAR' and len(lexeme) == 1:
-                        # just a dollar sign, not a real var
-                        sym_name = 'NAME'
-                    part_ast = BashAST(kind=sym_name, value=lexeme)
+
+                    if sym_name == 'NAME':
+                        # speical tokens - split all
+                        split_lexeme = lexeme.split()
+                        part_ast = []
+                        for atom_lexeme in split_lexeme:
+                            part_ast.append(BashAST(kind=sym_name, value=atom_lexeme))
+                    # elif sym_name == 'SQUOTE_STR':
+                    #     sbtk_nfa = re.compile(r'''
+                    #     [a-zA-Z]+| # word
+                    #     [0-9]+| # num
+                    #     .''', re.VERBOSE)
+                    #
+                    #     matches = sbtk_nfa.finditer(lexeme[1:-1])
+                    #     squote_parts = []
+                    #     for m in matches:
+                    #         group = m.group()
+                    #         if isinstance(group, tuple):
+                    #             raise RuntimeError("Multiple match of group {}".format(group))
+                    #
+                    #     split_lexeme = sbtk_nfa.findall(lexeme[1:-1])
+                    #     squote_parts = []
+                    #     for atom_lexeme in split_lexeme:
+                    #         squote_parts.append(BashAST(kind='SQUOTE_', value=atom_lexeme))
+                    #
+                    elif sym_name == 'VAR':
+                        if len(lexeme) == 1:
+                            # just a dollar sign, not a real var
+                            sym_name = 'NAME'
+                        else:
+                            lexeme = lexeme[1:]  # strip the dollar sign
+                        part_ast = BashAST(kind=sym_name, value=lexeme)
+                    else:
+                        part_ast = BashAST(kind=sym_name, value=lexeme)
                 except AttributeError:
-                    # todo: delegate
+                    # delegate
                     part_ast = self.visit(child)
-                parts.append(part_ast)
+                if isinstance(part_ast, list):
+                    parts.extend(part_ast)
+                else:
+                    parts.append(part_ast)
         return parts
 
     def visitProg(self, ctx: BashParser.ProgContext):

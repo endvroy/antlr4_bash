@@ -38,7 +38,9 @@ NL: '\n' -> skip;
 RPAREN : ')' -> popMode;
 
 mode INSIDE_DQUOTE;
-DQUOTE_CONTENT : (~["\\$<>`] | '\\' .)+;
+DQUOTE_VARNAME: VARNAME -> type(VARNAME);
+DQUOTE_NUM: NUM -> type(NUM);
+DQUOTE_CONTENT : (~["\\$<>`a-zA-Z0-9_] | '\\' .)+ -> type(NAME);
 DQUOTE_VAR : VAR -> type(VAR);
 DQUOTE_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_DOLLAR_DLPAREN: DOLLAR_DLPAREN -> pushMode(ARITH);
