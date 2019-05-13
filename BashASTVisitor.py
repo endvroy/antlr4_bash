@@ -142,24 +142,6 @@ class BashASTVisitor(BashParserVisitor):
                         part_ast = []
                         for atom_lexeme in split_lexeme:
                             part_ast.append(BashAST(kind=sym_name, value=atom_lexeme))
-                    # elif sym_name == 'SQUOTE_STR':
-                    #     sbtk_nfa = re.compile(r'''
-                    #     [a-zA-Z]+| # word
-                    #     [0-9]+| # num
-                    #     .''', re.VERBOSE)
-                    #
-                    #     matches = sbtk_nfa.finditer(lexeme[1:-1])
-                    #     squote_parts = []
-                    #     for m in matches:
-                    #         group = m.group()
-                    #         if isinstance(group, tuple):
-                    #             raise RuntimeError("Multiple match of group {}".format(group))
-                    #
-                    #     split_lexeme = sbtk_nfa.findall(lexeme[1:-1])
-                    #     squote_parts = []
-                    #     for atom_lexeme in split_lexeme:
-                    #         squote_parts.append(BashAST(kind='SQUOTE_', value=atom_lexeme))
-                    #
                     elif sym_name == 'VAR':
                         if len(lexeme) == 1:
                             # just a dollar sign, not a real var
@@ -228,6 +210,11 @@ class BashASTVisitor(BashParserVisitor):
     def visitDquote_str(self, ctx: BashParser.Dquote_strContext):
         dquote_parts = self.gather_parts(ctx)
         ast = BashAST(kind='dquote_str', parts=dquote_parts[1:-1])  # filter out dquotes
+        return ast
+
+    def visitSquote_str(self, ctx: BashParser.Squote_strContext):
+        squote_parts = self.gather_parts(ctx)
+        ast = BashAST(kind='squote_str', parts=squote_parts[1:-1])  # filter out squotes
         return ast
 
     def visitGrp(self, ctx: BashParser.GrpContext):
