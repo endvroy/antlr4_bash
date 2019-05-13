@@ -136,16 +136,15 @@ class BashASTVisitor(BashParserVisitor):
                     sym_name = BashParser.symbolicNames[sym_idx]
                     lexeme = child.getText()
 
-                    if sym_name == 'NAME':
-                        # speical tokens - split all
-                        split_lexeme = lexeme.split()
+                    if sym_name == 'PUNCS':
+                        # puncs - split all
                         part_ast = []
-                        for atom_lexeme in split_lexeme:
-                            part_ast.append(BashAST(kind=sym_name, value=atom_lexeme))
+                        for char in lexeme:
+                            part_ast.append(BashAST(kind='PUNC', value=char))
                     elif sym_name == 'VAR':
                         if len(lexeme) == 1:
                             # just a dollar sign, not a real var
-                            sym_name = 'NAME'
+                            sym_name = 'PUNC'
                         else:
                             lexeme = lexeme[1:]  # strip the dollar sign
                         part_ast = BashAST(kind=sym_name, value=lexeme)
@@ -236,4 +235,4 @@ class BashASTVisitor(BashParserVisitor):
             value = '{'
         else:
             value = '}'
-        return BashAST(kind='NAME', value=value)
+        return BashAST(kind='PUNC', value=value)

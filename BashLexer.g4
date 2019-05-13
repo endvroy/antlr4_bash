@@ -1,7 +1,7 @@
 lexer grammar BashLexer;
 
 VARNAME: [a-zA-Z_][a-zA-Z0-9_]*;
-NAME: (~[a-zA-Z0-9= \t\n<>(){}'"|$&`;\\])+;
+PUNCS: (~[a-zA-Z0-9= \t\n<>(){}'"|$&`;\\])+;
 NUM: [0-9]+;
 BLANK: [ \t]+;
 EQ: '=';
@@ -40,13 +40,13 @@ RPAREN : ')' -> popMode;
 mode INSIDE_SQUOTE;
 SQUOTE_VARNAME: VARNAME -> type(VARNAME);
 SQUOTE_NUM: NUM -> type(NUM);
-SQUOTE_CONTENT : (~['a-zA-Z0-9_] | '\\' .)+ -> type(NAME);
+SQUOTE_CONTENT : (~['a-zA-Z0-9_] | '\\' .)+ -> type(PUNCS);
 TAIL_SQUOTE: SQUOTE -> type(SQUOTE), popMode;
 
 mode INSIDE_DQUOTE;
 DQUOTE_VARNAME: VARNAME -> type(VARNAME);
 DQUOTE_NUM: NUM -> type(NUM);
-DQUOTE_CONTENT : (~["\\$<>`a-zA-Z0-9_] | '\\' .)+ -> type(NAME);
+DQUOTE_CONTENT : (~["\\$<>`a-zA-Z0-9_] | '\\' .)+ -> type(PUNCS);
 DQUOTE_VAR : VAR -> type(VAR);
 DQUOTE_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
 DQUOTE_DOLLAR_DLPAREN: DOLLAR_DLPAREN -> pushMode(ARITH);
@@ -71,7 +71,7 @@ DRPAREN : '))' -> popMode;
 
 mode PARAM_EXPANSION;
 PARAM_VARNAME: VARNAME -> type(VARNAME);
-PARAM_NAME: (~[-a-zA-Z0-9= \t\n<>(){}'"|$&`;:+?%#])+ -> type(NAME);
+PARAM_PUNCS: (~[-a-zA-Z0-9= \t\n<>(){}'"|$&`;:+?%#])+ -> type(PUNCS);
 PARAM_NUM: NUM -> type(NUM);
 PARAM_BLANK: BLANK -> type(BLANK);
 PARAM_VAR: VAR -> type(VAR);
@@ -97,7 +97,7 @@ PARAM_RCURLY: RCURLY -> type(RCURLY), popMode;
 // almost a full copy, just for backtick
 mode BT;
 BT_VARNAME: VARNAME -> type(VARNAME);
-BT_NAME: NAME -> type(NAME);
+BT_PUNCS: PUNCS -> type(PUNCS);
 BT_NUM: NUM -> type(NUM);
 BT_BLANK: BLANK -> type(BLANK);
 BT_EQ: EQ -> type(EQ);

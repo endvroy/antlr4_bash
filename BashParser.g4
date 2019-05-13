@@ -12,13 +12,13 @@ exec_prefix : exec_prefix (BLANK? redir | BLANK assign)
 
 assign: VARNAME EQ assign_rls;
 
-assign_rls : (VARNAME | NAME | NUM | squote_str | VAR | dquote_str | subst)*;
+assign_rls : (VARNAME | PUNCS | NUM | squote_str | VAR | dquote_str | subst)*;
 
 exec: prog exec_suffix?;
 
-prog : VARNAME (VARNAME | NAME | NUM | VAR | squote_str | dquote_str | subst)*
-| (NAME | NUM | EQ | VAR | squote_str | dquote_str | subst)
-(VARNAME | NAME | NUM | EQ | VAR | squote_str | dquote_str | subst)*;
+prog : VARNAME (VARNAME | PUNCS | NUM | VAR | squote_str | dquote_str | subst)*
+| (PUNCS | NUM | EQ | VAR | squote_str | dquote_str | subst)
+(VARNAME | PUNCS | NUM | EQ | VAR | squote_str | dquote_str | subst)*;
 
 exec_suffix : exec_suffix (BLANK? redir | BLANK arg)
 | (BLANK? redir | BLANK arg);
@@ -39,11 +39,11 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-arg: (VARNAME | NAME | ESC_CHAR | AND | EQ | NUM | squote_str | VAR | dquote_str | subst | pure_curly)+;
+arg: (VARNAME | PUNCS | ESC_CHAR | AND | EQ | NUM | squote_str | VAR | dquote_str | subst | pure_curly)+;
 
-dquote_str : DQUOTE (VARNAME | NUM | NAME | LT | GT | VAR | subst)* DQUOTE;
+dquote_str : DQUOTE (VARNAME | NUM | PUNCS | LT | GT | VAR | subst)* DQUOTE;
 
-squote_str : SQUOTE (VARNAME | NAME | NUM)* SQUOTE;
+squote_str : SQUOTE (VARNAME | PUNCS | NUM)* SQUOTE;
 
 subst : cst | lpst | rpst | arith | param_exp;
 
