@@ -22,8 +22,12 @@ def get_normalize_tokens(ast):
     if ast.kind.isupper():
         # leaf node
         if ast.kind == 'VAR':
+            # var node
+            # append $
             return ['$'] + [ast.value[1:]]
-        return [ast.value]
+        else:
+            # return the lexeme as-is
+            return [ast.value]
     elif ast.kind == 'pipeline':
         if ast.prev is None:
             prev_tokens = []
@@ -75,6 +79,8 @@ def get_normalize_tokens(ast):
         return ['$', '{'] + get_normalize_tokens(ast.var) + ast.op + ['}']
     elif ast.kind == 'dquote_str':
         return ['"'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['"']
+    elif ast.kind == 'squote_str':
+        return ["'"] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ["'"]
     elif ast.kind == 'paren_grp':
         return ['('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'curly_grp':
