@@ -40,7 +40,7 @@ RPAREN : ')' -> popMode;
 mode INSIDE_SQUOTE;
 SQUOTE_VARNAME: VARNAME -> type(VARNAME);
 SQUOTE_NUM: NUM -> type(NUM);
-SQUOTE_CONTENT : (~['a-zA-Z0-9_] | '\\' .)+ -> type(PUNCS);
+SQUOTE_CONTENT : (~['a-zA-Z0-9_])+ -> type(PUNCS);
 TAIL_SQUOTE: SQUOTE -> type(SQUOTE), popMode;
 
 mode INSIDE_DQUOTE;
@@ -59,8 +59,10 @@ DQUOTE_BACKTICK : BACKTICK -> type(BACKTICK), pushMode(BT);
 TAIL_DQUOTE : DQUOTE -> type(DQUOTE), popMode;
 
 mode ARITH;
-ARITH_CONTENT : (~["$<>()`])+;
+ARITH_VARNAME: VARNAME -> type(VARNAME);
+ARITH_NUM: NUM -> type(NUM);
 ARITH_VAR : VAR -> type(VAR);
+ARITH_CONTENT : (~["$<>()`])+ -> type(PUNCS);
 ARITH_DQUOTE : DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
 ARITH_DOLLAR_LPAREN : DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
 ARITH_LT_LPAREN : LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
@@ -71,9 +73,9 @@ DRPAREN : '))' -> popMode;
 
 mode PARAM_EXPANSION;
 PARAM_VARNAME: VARNAME -> type(VARNAME);
-PARAM_PUNCS: (~[-a-zA-Z0-9= \t\n<>(){}'"|$&`;:+?%#])+ -> type(PUNCS);
+PARAM_PUNCS: (~["$<>()`}])+ -> type(PUNCS);
 PARAM_NUM: NUM -> type(NUM);
-PARAM_BLANK: BLANK -> type(BLANK);
+//PARAM_BLANK: BLANK -> type(BLANK);
 PARAM_VAR: VAR -> type(VAR);
 PARAM_SQUOTE: SQUOTE -> type(SQUOTE), pushMode(INSIDE_SQUOTE);
 PARAM_DQUOTE: DQUOTE -> type(DQUOTE), pushMode(INSIDE_DQUOTE);
@@ -81,17 +83,9 @@ PARAM_LPAREN: LPAREN -> type(LPAREN), pushMode(DEFAULT_MODE);
 PARAM_DOLLAR_LPAREN: DOLLAR_LPAREN -> type(DOLLAR_LPAREN), pushMode(DEFAULT_MODE);
 PARAM_LT_LPAREN: LT_LPAREN -> type(LT_LPAREN), pushMode(DEFAULT_MODE);
 PARAM_GT_LPAREN: GT_LPAREN -> type(GT_LPAREN), pushMode(DEFAULT_MODE);
+PARAM_DOLLAR_LCURLY: DOLLAR_LCURLY -> type(DOLLAR_LCURLY), pushMode(PARAM_EXPANSION);
 PARAM_BACKTICK: BACKTICK -> type(BACKTICK), pushMode(BT);
 PARAM_DOLLAR_DLPAREN: DOLLAR_DLPAREN -> type(DOLLAR_DLPAREN), pushMode(ARITH);
-COMMA: ':';
-DASH: '-';
-PARAM_EQ: '=';
-QMARK: '?';
-PLUS: '+';
-PERCENT: '%';
-DPERCENT: '%%';
-HASH: '#';
-DHASH: '##';
 PARAM_RCURLY: RCURLY -> type(RCURLY), popMode;
 
 // almost a full copy, just for backtick
