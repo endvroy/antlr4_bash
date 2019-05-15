@@ -192,7 +192,7 @@ class BashASTVisitor(BashParserVisitor):
 
     def visitParam_exp(self, ctx: BashParser.Param_expContext):
         param_exp_parts = self.gather_parts(ctx)
-        ast = BashAST(kind='param_exp', parts=param_exp_parts)  # strip markers
+        ast = BashAST(kind='param_exp', parts=param_exp_parts[1:-1])  # strip markers
         return ast
 
     def visitDquote_str(self, ctx: BashParser.Dquote_strContext):
