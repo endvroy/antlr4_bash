@@ -186,25 +186,14 @@ class BashASTVisitor(BashParserVisitor):
         return BashAST(kind='rpst', pipeline=pipeline)
 
     def visitArith(self, ctx: BashParser.ArithContext):
-        pipeline = self.visitPipeline(ctx.pipeline())
-        return BashAST(kind='arith_subst', pipeline=pipeline)
-
-    def visitParam_exp(self, ctx: BashParser.Param_expContext):
-        var = ctx.VARNAME().getText()
-        if ctx.HASH():
-            ast = BashAST(kind='param_exp_hash', var=var)
-        else:
-            op = self.visitParam_exp_op(ctx.param_exp_op())
-            rhs = self.visitAssign_rls(ctx.assign_rls())
-            ast = BashAST(kind='param_exp_repl',
-                          var=var,
-                          op=op,
-                          rhs=rhs)
-        # todo: more cases may be added for param exp later
+        arith_parts = self.gather_parts(ctx)
+        ast = BashAST(kind='param_exp', parts=arith_parts[1:-1])  # strip markers
         return ast
 
-    def visitParam_exp_op(self, ctx: BashParser.Param_exp_opContext):
-        return [x.getText() for x in ctx.children]
+    def visitParam_exp(self, ctx: BashParser.Param_expContext):
+        param_exp_parts = self.gather_parts(ctx)
+        ast = BashAST(kind='param_exp', parts=param_exp_parts)  # strip markers
+        return ast
 
     def visitDquote_str(self, ctx: BashParser.Dquote_strContext):
         dquote_parts = self.gather_parts(ctx)
