@@ -24,7 +24,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-if __name__ == '__main__':
+def main():
     err_lines = []
     with open(CM_PATH) as cm_f, redirect_stderr(sys.stdout):
         lines = cm_f.readlines()
@@ -43,3 +43,7 @@ if __name__ == '__main__':
                 print(bcolors.ENDC)
                 print('---------------')
     print('success rate: {:.3f}'.format((1 - len(err_lines) / len(lines)) * 100))
+
+
+if __name__ == '__main__':
+    main()
