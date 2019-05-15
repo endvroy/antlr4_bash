@@ -1,5 +1,4 @@
 from antlr4 import *
-from .gen.BashLexer import BashLexer
 from .gen.BashParser import BashParser
 from .BashASTVisitor import BashASTVisitor
 import itertools
@@ -65,18 +64,15 @@ def get_normalize_tokens(ast):
     elif ast.kind == 'arg':
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
     elif ast.kind == 'cst':
-        return ['$', '('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['$('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'lpst':
-        return ['<', '('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['<('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'rpst':
-        return ['>', '('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['>('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'arith_subst':
-        return ['$', '(', '('] + get_normalize_tokens(ast.pipeline) + [')', ')']
-    elif ast.kind == 'param_exp_hash':
-        return ['$', '{', '#'] + get_normalize_tokens(ast.var) + ['}']
-    elif ast.kind == 'param_exp_repl':
-        # todo: the structure of op might change
-        return ['$', '{'] + get_normalize_tokens(ast.var) + ast.op + ['}']
+        return ['$(('] + get_normalize_tokens(ast.pipeline) + [')', ')']
+    elif ast.kind == 'param_exp':
+        return ['${'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['}']
     elif ast.kind == 'dquote_str':
         return ['"'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['"']
     elif ast.kind == 'squote_str':
