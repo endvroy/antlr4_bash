@@ -187,7 +187,7 @@ class BashASTVisitor(BashParserVisitor):
 
     def visitArith(self, ctx: BashParser.ArithContext):
         arith_parts = self.gather_parts(ctx)
-        ast = BashAST(kind='param_exp', parts=arith_parts[1:-1])  # strip markers
+        ast = BashAST(kind='arith_subst', parts=arith_parts[1:-1])  # strip markers
         return ast
 
     def visitParam_exp(self, ctx: BashParser.Param_expContext):
