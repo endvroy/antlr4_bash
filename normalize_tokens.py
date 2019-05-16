@@ -3,6 +3,7 @@ from .gen.BashParser import BashParser
 from .BashASTVisitor import BashASTVisitor
 import itertools
 from .prof_loader import PanicBashLexer
+from bashlint.bash import argument_types
 
 
 def parse(line):
@@ -63,6 +64,14 @@ def get_normalize_tokens(ast):
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
     elif ast.kind == 'arg':
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
+    elif ast.kind in argument_types:
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
+    elif ast.kind == 'flag':
+        tokens = [ast.name]
+        if ast.value is not None:
+            tokens.append(' ')
+            tokens.extend(get_normalize_tokens(ast.value))
+        return tokens
     elif ast.kind == 'cst':
         return ['$('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'lpst':
