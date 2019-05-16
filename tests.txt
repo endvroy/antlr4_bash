@@ -33,3 +33,6 @@ a=<4 2&>1 b=  wc
 find /the/path -depth -name "*.abc" -exec sh -c 'mv "$1" "${1%.abc}.edefg"' _ {} \;
 cp "${FILE}" "COLLECT/$(mktemp job_XXXXXXXXX)"
 TMPPS_PREFIX=$(mktemp "${TMPDIR:-/tmp/}${tempname}.XXXXXX")
+mkdir -p folder$( seq -s "/folder" 999 )1000
+find .cache/chromium/Default/Cache/ -mindepth 1 -type d -size +100M -delete
+find ~ -type d -exec chmod +x {} \;
