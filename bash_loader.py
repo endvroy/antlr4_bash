@@ -1,14 +1,16 @@
 from antlr4 import *
-from .gen.BashLexer import BashLexer
+# from .gen.BashLexer import BashLexer
 from .gen.BashParser import BashParser
 from .BashASTVisitor import BashASTVisitor
+from .prof_loader import PanicBashLexer
 
 
 def raw_parse(line):
     input_stream = InputStream(line)
-    lexer = BashLexer(input_stream)
+    lexer = PanicBashLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = BashParser(stream)
+    parser._errHandler = BailErrorStrategy()
     tree = parser.pipeline()
     return tree
 
