@@ -62,7 +62,7 @@ def get_normalize_tokens(ast):
         return lhs + [ast.type] + rhs
     elif ast.kind == 'prog':
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
-    elif ast.kind == 'arg':
+    elif ast.kind in ['arg', 'binarylogicop']:
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
     elif ast.kind in argument_types:
         return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
