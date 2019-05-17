@@ -93,8 +93,12 @@ class BashASTVisitor(BashParserVisitor):
 
     def visitAssign(self, ctx: BashParser.AssignContext):
         lhs = ctx.VARNAME().getText()
+        if ctx.PLUS():
+            op = '+='
+        else:
+            op = '='
         rhs = self.visitAssign_rls(ctx.assign_rls())
-        ast = BashAST(kind='assign', lhs=lhs, rhs=rhs)
+        ast = BashAST(kind='assign', lhs=lhs, op=op, rhs=rhs)
         return ast
 
     def visitAssign_rls(self, ctx: BashParser.Assign_rlsContext):

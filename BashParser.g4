@@ -10,7 +10,7 @@ cmd : BLANK? ((exec_prefix BLANK)? exec | exec_prefix) BLANK?;
 exec_prefix : exec_prefix (BLANK? redir | BLANK assign)
 | (redir | assign);
 
-assign: VARNAME EQ assign_rls;
+assign: VARNAME PLUS? EQ assign_rls;
 
 assign_rls : (VARNAME | PUNCS | NUM | squote_str | VAR | dquote_str | subst)*;
 
@@ -39,7 +39,7 @@ redir_op : LT
 | LTGT
 | GTPIPE;
 
-arg: (VARNAME | PUNCS | ESC_CHAR | AND | EQ | NUM | squote_str | VAR | dquote_str | subst | pure_curly)+;
+arg: (VARNAME | PUNCS | PLUS| ESC_CHAR | AND | EQ | NUM | squote_str | VAR | dquote_str | subst | pure_curly)+;
 
 dquote_str : DQUOTE (VARNAME | NUM | PUNCS | LT | GT | VAR | subst)* DQUOTE;
 

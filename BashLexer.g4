@@ -1,9 +1,10 @@
 lexer grammar BashLexer;
 
 VARNAME: [a-zA-Z_][a-zA-Z0-9_]*;
-PUNCS: (~[a-zA-Z0-9= \t\n<>(){}'"|$&`;\\])+;
+PUNCS: (~[a-zA-Z0-9= \t\n<>(){}'"|$&`;\\+])+;
 NUM: [0-9]+;
 BLANK: [ \t]+;
+PLUS: '+';
 EQ: '=';
 VAR: '$' ( [$!@] | [a-zA-Z0-9_]+)?;
 SQUOTE: '\'' -> pushMode(INSIDE_SQUOTE);
@@ -94,6 +95,7 @@ BT_VARNAME: VARNAME -> type(VARNAME);
 BT_PUNCS: PUNCS -> type(PUNCS);
 BT_NUM: NUM -> type(NUM);
 BT_BLANK: BLANK -> type(BLANK);
+BT_PLUS: PLUS -> type(PLUS);
 BT_EQ: EQ -> type(EQ);
 BT_VAR: VAR -> type(VAR);
 BT_SQUOTE: SQUOTE -> type(SQUOTE),pushMode(INSIDE_SQUOTE);
