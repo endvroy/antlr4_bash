@@ -16,10 +16,14 @@ def parse(line):
     return tree
 
 
-def get_normalize_tokens(ast):
+def get_normalize_tokens(ast, p=None, sketch=False):
+    if ast is None:
+        return []
     if ast == []:
         return []
     if ast.kind.isupper():
+        if sketch:
+            return ['<SKETCH_{}>'.format(p.kind.upper())]
         # leaf node
         if ast.kind == 'VAR':
             # var node
@@ -32,12 +36,12 @@ def get_normalize_tokens(ast):
         if ast.prev is None:
             prev_tokens = []
         else:
-            prev_tokens = get_normalize_tokens(ast.prev)
+            prev_tokens = get_normalize_tokens(ast.prev, ast)
             prev_tokens.append('|')
-        return prev_tokens + get_normalize_tokens(ast.last_cmd)
+        return prev_tokens + get_normalize_tokens(ast.last_cmd, ast)
     elif ast.kind == 'cmd':
         assign_list_tokens = get_sstl(ast.assign_list, get_normalize_tokens)
-        prog_tokens = get_normalize_tokens(ast.prog)
+        prog_tokens = get_normalize_tokens(ast.prog, ast)
         args_tokens = get_sstl(ast.args, get_normalize_tokens)
         redir_tokens = get_sstl(ast.redir, get_normalize_tokens)
         if assign_list_tokens:
@@ -50,47 +54,47 @@ def get_normalize_tokens(ast):
         return tokens
     elif ast.kind == 'assign':
         lhs = [ast.lhs]
-        rhs = get_normalize_tokens(ast.rhs)
+        rhs = get_normalize_tokens(ast.rhs, ast)
         return lhs + ['='] + rhs
     elif ast.kind == 'assign_rhs':
-        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts))
     elif ast.kind == 'redir':
         lhs = []
         if ast.lhs:
             lhs.append(ast.lhs)
-        rhs = get_normalize_tokens(ast.rhs)
+        rhs = get_normalize_tokens(ast.rhs, ast)
         return lhs + [ast.type] + rhs
     elif ast.kind == 'prog':
-        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
-    elif ast.kind in ['arg', 'binarylogicop']:
-        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts))
+    elif ast.kind in ['arg', 'binarylogicop', 'unarylogicop', 'operator']:
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts))
     elif ast.kind in argument_types:
-        return list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts))
+        return list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts))
     elif ast.kind == 'flag':
         tokens = [ast.name]
         if ast.value is not None:
             tokens.append(' ')
             tokens.extend(itertools.chain.from_iterable(
-                get_normalize_tokens(x) for x in ast.value))
+                get_normalize_tokens(x, ast) for x in ast.value))
         return tokens
     elif ast.kind == 'cst':
-        return ['$('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['$('] + get_normalize_tokens(ast.pipeline, ast) + [')']
     elif ast.kind == 'lpst':
-        return ['<('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['<('] + get_normalize_tokens(ast.pipeline, ast) + [')']
     elif ast.kind == 'rpst':
-        return ['>('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['>('] + get_normalize_tokens(ast.pipeline, ast) + [')']
     elif ast.kind == 'arith_subst':
-        return ['$(('] + get_normalize_tokens(ast.pipeline) + ['))']
+        return ['$(('] + get_normalize_tokens(ast.pipeline, ast) + ['))']
     elif ast.kind == 'param_exp':
-        return ['${'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['}']
+        return ['${'] + list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts)) + ['}']
     elif ast.kind == 'dquote_str':
-        return ['"'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['"']
+        return ['"'] + list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts)) + ['"']
     elif ast.kind == 'squote_str':
-        return ["'"] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ["'"]
+        return ["'"] + list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts)) + ["'"]
     elif ast.kind == 'paren_grp':
-        return ['('] + get_normalize_tokens(ast.pipeline) + [')']
+        return ['('] + get_normalize_tokens(ast.pipeline, ast) + [')']
     elif ast.kind == 'curly_grp':
-        return ['{', ' '] + get_normalize_tokens(ast.pipeline) + ['}']
+        return ['{', ' '] + get_normalize_tokens(ast.pipeline, ast) + ['}']
 
 
 def get_sstl(l, f):
