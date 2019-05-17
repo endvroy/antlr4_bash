@@ -1,19 +1,5 @@
-from antlr4 import *
-from .gen.BashParser import BashParser
-from .BashASTVisitor import BashASTVisitor
 import itertools
-from .prof_loader import PanicBashLexer
 from bashlint.bash import argument_types
-
-
-def parse(line):
-    input_stream = InputStream(line)
-    lexer = PanicBashLexer(input_stream)
-    stream = CommonTokenStream(lexer)
-    parser = BashParser(stream)
-    parser._errHandler = BailErrorStrategy()
-    tree = parser.pipeline()
-    return tree
 
 
 def get_normalize_tokens(ast, p=None, sketch=False):
@@ -116,15 +102,9 @@ def get_sstl(l, f, sketch):
     return token_list
 
 
-def normalize_line(line):
-    parse_tree = parse(line)
-    visitor = BashASTVisitor()
-    ast = visitor.visit(parse_tree)
-    tokens = get_normalize_tokens(ast)
-    return tokens
-
-
 if __name__ == '__main__':
+    from bash_parser.normalize_line import normalize_line
+
     l = input('input:\n')
     tokens = normalize_line(l)
     print(''.join(tokens))
