@@ -70,7 +70,8 @@ def get_normalize_tokens(ast):
         tokens = [ast.name]
         if ast.value is not None:
             tokens.append(' ')
-            tokens.extend(get_normalize_tokens(ast.value))
+            tokens.extend(itertools.chain.from_iterable(
+                get_normalize_tokens(x) for x in ast.value))
         return tokens
     elif ast.kind == 'cst':
         return ['$('] + get_normalize_tokens(ast.pipeline) + [')']
@@ -79,7 +80,7 @@ def get_normalize_tokens(ast):
     elif ast.kind == 'rpst':
         return ['>('] + get_normalize_tokens(ast.pipeline) + [')']
     elif ast.kind == 'arith_subst':
-        return ['$(('] + get_normalize_tokens(ast.pipeline) + [')', ')']
+        return ['$(('] + get_normalize_tokens(ast.pipeline) + ['))']
     elif ast.kind == 'param_exp':
         return ['${'] + list(itertools.chain.from_iterable(get_normalize_tokens(x) for x in ast.parts)) + ['}']
     elif ast.kind == 'dquote_str':
