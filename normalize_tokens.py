@@ -54,8 +54,9 @@ def get_normalize_tokens(ast, p=None, sketch=False):
         return tokens
     elif ast.kind == 'assign':
         lhs = [ast.lhs]
+        op = [ast.op]
         rhs = get_normalize_tokens(ast.rhs, ast)
-        return lhs + ['='] + rhs
+        return lhs + op + rhs
     elif ast.kind == 'assign_rhs':
         return list(itertools.chain.from_iterable(get_normalize_tokens(x, ast) for x in ast.parts))
     elif ast.kind == 'redir':
